@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jom Membaca Keluarga Hana</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:'Comic Sans MS', sans-serif;
+    }
+
+    body{
+        background: linear-gradient(to bottom, #5fd3ff, #8cf58c);
+        overflow-x:hidden;
+    }
+
+    .game-container{
+        width:95%;
+        max-width:1000px;
+        margin:20px auto;
+        background: rgba(255,255,255,0.95);
+        border-radius:25px;
+        padding:20px;
+        box-shadow:0 0 20px rgba(0,0,0,0.3);
+        border:8px solid #ffcc00;
+        position:relative;
+    }
+
+    .title{
+        text-align:center;
+        font-size:42px;
+        color:#ff3c00;
+        text-shadow:3px 3px #fff;
+        margin-bottom:20px;
+    }
+
+    .mario-header{
+        text-align:center;
+        font-size:60px;
+        animation:bounce 1s infinite alternate;
+    }
+
+    @keyframes bounce{
+        from{transform:translateY(0);}
+        to{transform:translateY(-10px);}
+    }
+
+    .sentence-box{
+        background:#fff7d6;
+        border:5px dashed #ff9800;
+        border-radius:20px;
+        padding:30px;
+        text-align:center;
+        margin-bottom:20px;
+    }
+
+    .sentence-number{
+        font-size:28px;
+        color:#ff0000;
+        margin-bottom:10px;
+    }
+
+    .sentence{
+        font-size:32px;
+        color:#333;
+        font-weight:bold;
+        line-height:1.5;
+    }
+
+    .buttons{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:15px;
+        margin-top:20px;
+    }
+
+    button{
+        border:none;
+        padding:15px 25px;
+        border-radius:15px;
+        cursor:pointer;
+        font-size:20px;
+        font-weight:bold;
+        transition:0.3s;
+    }
+
+    button:hover{
+        transform:scale(1.08);
+    }
+
+    .speak-btn{
+        background:#00bfff;
+        color:white;
+    }
+
+    .record-btn{
+        background:#ff4081;
+        color:white;
+    }
+
+    .stop-btn{
+        background:#ff5722;
+        color:white;
+    }
+
+    .next-btn{
+        background:#4caf50;
+        color:white;
+    }
+
+    .score-box{
+        text-align:center;
+        margin-top:20px;
+        font-size:28px;
+        color:#6a1b9a;
+        font-weight:bold;
+    }
+
+    .result{
+        text-align:center;
+        margin-top:20px;
+        font-size:30px;
+        font-weight:bold;
+    }
+
+    .stars{
+        text-align:center;
+        font-size:50px;
+        margin-top:15px;
+        animation:pop 0.8s infinite alternate;
+    }
+
+    @keyframes pop{
+        from{transform:scale(1);}
+        to{transform:scale(1.2);}
+    }
+
+    .mario-ground{
+        width:100%;
+        height:80px;
+        background: repeating-linear-gradient(
+            90deg,
+            #8B4513 0px,
+            #8B4513 40px,
+            #A0522D 40px,
+            #A0522D 80px
+        );
+        border-top:8px solid #3e8e41;
+        margin-top:30px;
+        border-radius:0 0 20px 20px;
+    }
+
+    .cartoon{
+        position:absolute;
+        font-size:60px;
+    }
+
+    .cloud{
+        top:20px;
+        left:20px;
+    }
+
+    .coin{
+        top:20px;
+        right:20px;
+        animation:spin 1s linear infinite;
+    }
+
+    @keyframes spin{
+        from{transform:rotateY(0deg);}
+        to{transform:rotateY(360deg);}
+    }
+
+    .status-box{
+        text-align:center;
+        margin-top:15px;
+        font-size:22px;
+        color:#444;
+    }
+
+</style>
+</head>
+
+<body>
+
+<div class="game-container">
+
+    <div class="cartoon cloud">☁️</div>
+    <div class="cartoon coin">🪙</div>
+
+    <div class="mario-header">🍄🎮⭐</div>
+
+    <h1 class="title">Jom Membaca Keluarga Hana</h1>
+
+    <div class="sentence-box">
+        <div class="sentence-number" id="sentenceNumber"></div>
+        <div class="sentence" id="sentenceText"></div>
+    </div>
+
+    <div class="buttons">
+        <button class="speak-btn" onclick="playSentence()">🔊 Dengar Bacaan</button>
+
+        <button class="record-btn" onclick="startRecording()">🎤 Rekod Suara</button>
+
+        <button class="stop-btn" onclick="stopRecording()">⏹ Henti Rekod</button>
+
+        <button class="next-btn" onclick="nextSentence()">➡ Ayat Seterusnya</button>
+    </div>
+
+    <div class="status-box" id="status">
+        Tekan butang untuk mula membaca.
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <div class="stars" id="stars"></div>
+
+    <div class="score-box">
+        ⭐ Markah: <span id="score">0</span>
+    </div>
+
+    <div class="mario-ground"></div>
+
+</div>
+
+<script>
+
+const sentences = [
+"Ini Hana.",
+"Adik Hana masih kecil.",
+"Umurnya empat tahun.",
+"Ibu dan ayah selalu menjaga adik.",
+"Ayah selalu membaca buku cerita bersama adik.",
+"Abang juga suka menyanyi dengan adik.",
+"Hana melihat mereka dari jauh.",
+"Hana duduk diam di sudut bilik.",
+"Hana berasa sedih.",
+" Kini Hana tahu keluarganya menyayanginya. Hana berasa gembira."
+];
+
+let current = 0;
+let score = 0;
+
+const sentenceText = document.getElementById("sentenceText");
+const sentenceNumber = document.getElementById("sentenceNumber");
+const result = document.getElementById("result");
+const stars = document.getElementById("stars");
+const scoreDisplay = document.getElementById("score");
+const statusBox = document.getElementById("status");
+
+function loadSentence(){
+    sentenceText.innerHTML = sentences[current];
+    sentenceNumber.innerHTML = "Ayat " + (current+1);
+    result.innerHTML = "";
+    stars.innerHTML = "";
+}
+
+loadSentence();
+
+function playSentence(){
+
+    const utterance = new SpeechSynthesisUtterance(sentences[current]);
+    utterance.lang = "ms-MY";
+    utterance.rate = 0.8;
+
+    speechSynthesis.speak(utterance);
+
+}
+
+let recognition;
+
+function startRecording(){
+
+    if(!('webkitSpeechRecognition' in window)){
+        alert("Browser anda tidak menyokong rakaman suara.");
+        return;
+    }
+
+    recognition = new webkitSpeechRecognition();
+    recognition.lang = "ms-MY";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.start();
+
+    statusBox.innerHTML = "🎤 Murid sedang membaca...";
+
+    recognition.onresult = function(event){
+
+        let speechResult = event.results[0][0].transcript.toLowerCase();
+        let correctSentence = sentences[current].toLowerCase();
+
+        console.log("Murid:", speechResult);
+        console.log("Betul:", correctSentence);
+
+        checkAnswer(speechResult, correctSentence);
+    };
+
+    recognition.onerror = function(){
+        statusBox.innerHTML = "❌ Cuba rekod semula.";
+    };
+
+}
+
+function stopRecording(){
+
+    if(recognition){
+        recognition.stop();
+        statusBox.innerHTML = "Rakaman dihentikan.";
+    }
+
+}
+
+function checkAnswer(userSpeech, correctSentence){
+
+    if(userSpeech.includes(correctSentence.substring(0,10))){
+
+        result.innerHTML = "✅ BETUL!";
+        result.style.color = "green";
+
+        stars.innerHTML = "⭐ ⭐ ⭐";
+
+        score += 10;
+        scoreDisplay.innerHTML = score;
+
+        statusBox.innerHTML = "🎉 TAHNIAH!";
+
+        playTahniah();
+
+    }else{
+
+        result.innerHTML = "❌ Salah. Sila ulang semula.";
+        result.style.color = "red";
+
+        stars.innerHTML = "";
+
+        statusBox.innerHTML = "📢 Cuba baca semula dengan betul.";
+
+        playTryAgain();
+
+    }
+
+}
+
+function playTahniah(){
+
+    const congrats = new SpeechSynthesisUtterance("Tahniah! Bacaan anda betul!");
+    congrats.lang = "ms-MY";
+    congrats.rate = 0.9;
+
+    speechSynthesis.speak(congrats);
+
+}
+
+function playTryAgain(){
+
+    const retry = new SpeechSynthesisUtterance("Cuba lagi.");
+    retry.lang = "ms-MY";
+    retry.rate = 0.9;
+
+    speechSynthesis.speak(retry);
+
+}
+
+function nextSentence(){
+
+    if(current < sentences.length - 1){
+
+        current++;
+        loadSentence();
+
+    }else{
+
+        sentenceText.innerHTML = "🎉 Permainan Tamat!";
+        sentenceNumber.innerHTML = "";
+
+        result.innerHTML = "Jumlah Markah Anda: " + score;
+        result.style.color = "#6a1b9a";
+
+        stars.innerHTML = "🏆🏆🏆";
+
+        statusBox.innerHTML = "Hebat! Anda berjaya habiskan bacaan.";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
